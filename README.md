@@ -1,25 +1,42 @@
-# Airflow dbt Cloud
-A quick start repo for creating Airflow dags to manage your dbt Cloud jobs. 
+# **Projeto Airflow - DAG para Execução de DBT**
 
-**Please see the dbt docs on [Airflow and dbt Cloud](https://docs.getdbt.com/guides/airflow-and-dbt-cloud) for an in-depth step-by-step tutorial. Only the key concepts are included in this README.**
+## **Descrição do Projeto**
+Este projeto implementa uma DAG no Apache Airflow para automatizar a execução de tarefas relacionadas a modelos do DBT. A DAG é configurada para:
 
-Please see the [dbt Cloud Airflow Provider](https://airflow.apache.org/docs/apache-airflow-providers-dbt-cloud/stable/index.html) docs for the most up-to-date details on the Airflow providers used in the example dags of this repo.
+1. **Agendamento Diário**: Executa automaticamente uma vez por dia, em um horário definido.
+2. **Execução de Testes e Transformações**:
+   - Acessa o repositório onde os modelos do DBT estão localizados.
+   - Executa os testes definidos no DBT.
+   - Realiza as transformações especificadas nos modelos.
+3. **Conexão com o Data Warehouse (DW)**: Certifica-se de que a conexão com o DW esteja configurada no arquivo `profiles.yml` do DBT.
+4. **Critério de Sucesso**: A DAG deve ser capaz de rodar com sucesso **três vezes consecutivas**.
 
-# Getting Started 
-To use this repo you'll need:
-1. [dbt Cloud Teams or Enterprise account](https://www.getdbt.com/pricing) (with [admin access](https://docs.getdbt.com/docs/cloud/manage-access/enterprise-permissions)) in order to create a service token.
-2. [Docker Desktop](https://docs.docker.com/desktop/) installed
-3. [Astro CLI](https://www.astronomer.io/docs/astro/cli/install-cli) installed. On Mac use `brew install astro`.
+---
 
-# Using this repo
-After creating all the requisite accounts and installing Astro CLI, simply:
-- Clone this repo locally: `gh repo clone dbt-labs/airflow-dbt-cloud`
-- Create a [dbt Cloud service token](https://docs.getdbt.com/docs/dbt-cloud-apis/service-tokens)
-- Create a [dbt Cloud job](https://docs.getdbt.com/docs/deploy/deploy-jobs#create-and-schedule-jobs)
-- Start your Astro container: `astro dev start`
-- Create a new dbt Cloud Airflow connection. To do this:
-  - From the Airflow interface, navigate to Admin and click on Connections
-  - Click on the + sign to add a new connection, then click on the drop down to search for the dbt Cloud Connection Type
-  - Add in your connection details and your default dbt Cloud account id. This is found in your dbt Cloud URL after the accounts route section (`/accounts/{YOUR_ACCOUNT_ID}`)
-- Update the code in the dags/ folder to use your Airflow connection, dbt account and dbt job information
-- Run your first dbt Cloud Airflow DAG 🎉
+## **Arquitetura do Projeto**
+### Estrutura da DAG:
+- **Tarefa 1**: Clonar/Acessar o repositório do DBT.
+- **Tarefa 2**: Validar e rodar os testes do DBT.
+- **Tarefa 3**: Executar as transformações usando o DBT.
+
+A execução das tarefas é orquestrada utilizando dependências definidas no Airflow, garantindo que todas as etapas sejam executadas na sequência correta.
+
+---
+
+## **Pré-requisitos**
+Antes de executar este projeto, certifique-se de que as seguintes dependências estão instaladas e configuradas:
+
+1. **Apache Airflow**: Certifique-se de que o Airflow está instalado e funcionando no ambiente.
+2. **DBT**:
+   - O repositório dos modelos do DBT deve estar acessível.
+   - O arquivo `profiles.yml` do DBT deve conter a configuração correta para o DW utilizado pela DAG.
+3. **Configuração do Airflow**:
+   - O Airflow deve estar configurado com uma conexão ao Data Warehouse.
+   - Certifique-se de que a DAG está habilitada no Airflow.
+
+## **Critérios de Sucesso**
+  - A DAG deve ser executada diariamente no horário configurado.
+  - Todas as etapas (testes e transformações do DBT) devem ser concluídas sem erros.
+  - A DAG deve rodar com sucesso 3 vezes consecutivas.
+
+  ![Execução da DAG](images/execucao_dag.png)
